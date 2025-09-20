@@ -1,4 +1,4 @@
-yaml
+
 # GitHub Actions workflow to build a Docker image and push it to Amazon ECR
 name: Build and Push to ECR
 
