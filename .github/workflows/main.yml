@@ -1,8 +1,5 @@
-
-# GitHub Actions workflow to build a Docker image and push it to Amazon ECR
 name: Build and Push to ECR
 
-# This workflow runs on any push to the master branch
 on:
   push:
     branches:
@@ -11,7 +8,6 @@ on:
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: clo835-week3
-  # We will tag the image with the first 7 characters of the git commit hash
   IMAGE_TAG: ${{ github.sha }}
 
 jobs:
@@ -22,6 +18,11 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+
+    # --- NEW DEBUGGING STEP ---
+    - name: List files in the repository
+      run: |
+        ls -R
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -39,8 +40,7 @@ jobs:
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      # The Dockerfile is in a subdirectory, so we need to point the build there
-
+      working-directory: ./chapter-02/kuard
       run: |
-        docker build -t $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} ./chapter-02/kuard
+        docker build -t $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} .
         docker push $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
